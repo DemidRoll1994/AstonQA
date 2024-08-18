@@ -26,7 +26,7 @@ public class Park {
         this.attractions = attractions;
     }
 
-    private class Attraction{
+    private class Attraction {
         private String info;
         private LocalTime openingTime;
         private LocalTime closingTime;

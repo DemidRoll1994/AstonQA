@@ -86,10 +86,8 @@ public class Employee {
         if (phoneNumber != employee.phoneNumber) return false;
         if (Double.compare(employee.salary, salary) != 0) return false;
         if (age != employee.age) return false;
-        if (!Objects.equals(fullName, employee.fullName))
-            return false;
-        if (!Objects.equals(position, employee.position))
-            return false;
+        if (!Objects.equals(fullName, employee.fullName)) return false;
+        if (!Objects.equals(position, employee.position)) return false;
         return Objects.equals(email, employee.email);
     }
 
