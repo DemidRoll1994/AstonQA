@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-public class Main {
+public class FactorialTest {
 
     @ParameterizedTest(name = "{1} is a factorial of {0}")
     @CsvSource(value = {
