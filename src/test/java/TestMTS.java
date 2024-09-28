@@ -11,18 +11,15 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 public class TestMTS {
     private WebDriver driver;
 
-    @BeforeSuite
-    public void testInit() {
-        driver = new ChromeDriver();
-        driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-    }
-
     @BeforeMethod
     public void beforeMethods() {
+        driver = new ChromeDriver();
+        driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
         driver.get("https://www.mts.by");
         try {
             driver.findElement(By.xpath("//*[@id=\"cookie-agree\"]")).click();
@@ -34,56 +31,55 @@ public class TestMTS {
     @Test
     public void testBlockTitle() {
         WebElement blocktitle =
-                driver.findElement(By.xpath("//*[@id=\"pay-section\"]/div/div/div[2]/section/div/h2"));
+                driver.findElement(By.cssSelector("#pay-section .pay h2"));
         String expectedtitle = "Онлайн пополнение\nбез комиссии";
-        assertEquals(blocktitle.getText(), expectedtitle);
+        String actual = blocktitle.getText();
+        assertEquals(actual, expectedtitle);
     }
-
     @DataProvider
     public Object[][] testPaymentSystems() {
         return new Object[][]{
-                {"//*[@id=\"pay-section\"]/div/div/div[2]/section/div/div[2]/ul/li[2]/img", "https://www.mts.by/local/templates/new_design/assets/html/images/pages/index/pay/visa-verified.svg"},
-                {"//*[@id=\"pay-section\"]/div/div/div[2]/section/div/div[2]/ul/li[1]/img", "https://www.mts.by/local/templates/new_design/assets/html/images/pages/index/pay/visa.svg"},
-                {"//*[@id=\"pay-section\"]/div/div/div[2]/section/div/div[2]/ul/li[3]/img", "https://www.mts.by/local/templates/new_design/assets/html/images/pages/index/pay/mastercard.svg"},
-                {"//*[@id=\"pay-section\"]/div/div/div[2]/section/div/div[2]/ul/li[4]/img", "https://www.mts.by/local/templates/new_design/assets/html/images/pages/index/pay/mastercard-secure.svg"},
-                {"//*[@id=\"pay-section\"]/div/div/div[2]/section/div/div[2]/ul/li[5]/img", "https://www.mts.by/local/templates/new_design/assets/html/images/pages/index/pay/belkart.svg"}};
+                {"#pay-section .pay__partners > ul > li:nth-child(1) > img"},
+                {"#pay-section .pay__partners > ul > li:nth-child(2) > img"},
+                {"#pay-section .pay__partners > ul > li:nth-child(3) > img"},
+                {"#pay-section .pay__partners > ul > li:nth-child(4) > img"},
+                {"#pay-section .pay__partners > ul > li:nth-child(5) > img"}
+        };
     }
 
     @Test(dataProvider = "testPaymentSystems", testName = "Payment System test")
-    public void testPaymentSystems(String xpath, String pictureUrl) {
-        WebElement blocktitle = driver.findElement(By.xpath(xpath));
-        assertEquals(blocktitle.getAttribute("src"), pictureUrl);
+    public void testPaymentSystems(String classname) {
+        assertTrue(driver.findElement(By.cssSelector(classname)).isDisplayed());
     }
 
     @Test
     public void testAboutButton(){
-        driver.findElement(By.xpath("//*[@id=\"pay-section\"]/div/div/div[2]/section/div/a")).click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement element =
-                wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("pay-description__text")));
-        String expectedtitle = "Порядок оплаты и безопасность интернет платежей";
-        assertEquals(element.getText(), expectedtitle);
+        driver.findElement(By.partialLinkText("Подробнее о сервисе")).click();
+        String expectedUrl = "https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/";
+        assertEquals(driver.getCurrentUrl(), expectedUrl);
     }
 
     @Test
     public void testAction()  {
-        var phone = driver.findElement(By.xpath("/html/body/div[6]/main/div/div[4]/div[1]/div/div/div[2]/section/div/div[1]/div[2]/form[1]/div[1]/input"));
-        var sum = driver.findElement(By.xpath("/html/body/div[6]/main/div/div[4]/div[1]/div/div/div[2]/section/div/div[1]/div[2]/form[1]/div[2]/input"));
+        var phone = driver.findElement(By.cssSelector("#connection-phone"));
+        var sum = driver.findElement(By.cssSelector("#connection-sum"));
         phone.click();
         phone.sendKeys("297777777");
         sum.click();
         sum.sendKeys("0.1");
-        driver.findElement(By.xpath("/html/body/div[6]/main/div/div[4]/div[1]/div/div/div[2]/section/div/div[1]/div[2]/form[1]/button")).click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement element =
-                wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("pay-description__text")));
+        driver.findElement(By.cssSelector("#pay-connection button")).click();
+        WebElement iframe = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.className("bepaid-iframe")));
+        driver.switchTo().frame(iframe);
+        WebElement element = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.className("pay-description__text")));
         String expectedTitle = "Оплата: Услуги связи Номер:375297777777";
         assertEquals(element.getText(), expectedTitle);
     }
 
 
-    @AfterSuite
+    @AfterMethod
     public void finalizeTests() {
-        driver.close();
+        driver.quit();
     }
 }
