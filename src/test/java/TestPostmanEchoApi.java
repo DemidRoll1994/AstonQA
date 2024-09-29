@@ -1,10 +1,7 @@
 import io.restassured.http.ContentType;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-
 import java.nio.charset.StandardCharsets;
-
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -19,21 +16,6 @@ public class TestPostmanEchoApi {
     private final String PATCH_URI = "patch";
     private final String DELETE_URI = "delete";
 
-    @DataProvider
-    public Object[][] positiveFactorialTest() {
-        return new Object[][]{
-                {(short) 0, 1L},
-                {(short) 1, 1L},
-                {(short) 20, 2432902008176640000L}};
-    }
-
-    @DataProvider
-    public Object[] negativeFactorialTest() {
-        return new Object[]{
-                (short) -1,
-                (short) 21};
-    }
-
     @Test
     void get() {
         given().baseUri(BASE_URI)
@@ -45,7 +27,6 @@ public class TestPostmanEchoApi {
                 .body("args.foo1", equalTo("bar1"))
                 .body("args.foo2", equalTo("bar2"));
     }
-
     @Test
     void postRawText() {
         given().baseUri(BASE_URI)
@@ -57,7 +38,6 @@ public class TestPostmanEchoApi {
                 .assertThat()
                 .body("data", equalTo("{ \"foo1\": \"bar1\" }"));
     }
-
     @Test
     void postFormData() {
         given().contentType(ContentType.URLENC.withCharset(StandardCharsets.UTF_8))
@@ -71,9 +51,7 @@ public class TestPostmanEchoApi {
                 .assertThat()
                 .body("form.foo1", equalTo("bar1"))
                 .body("form.foo2", equalTo("bar2"));
-
     }
-
     @Test
     void put() {
         given().contentType(ContentType.TEXT)
@@ -85,8 +63,6 @@ public class TestPostmanEchoApi {
                 .statusCode(200)
                 .body("data", equalTo(RESPONSE_MESSAGE));
     }
-
-
     @Test
     void patch() {
         given().contentType(ContentType.TEXT)
@@ -98,7 +74,6 @@ public class TestPostmanEchoApi {
             .statusCode(200)
             .body("data", equalTo(RESPONSE_MESSAGE));
     }
-
     @Test
     void delete() {
         given().contentType(ContentType.TEXT)
