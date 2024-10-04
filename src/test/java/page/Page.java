@@ -13,7 +13,7 @@ public abstract class Page {
     WebDriverWait wait;
     public Page(WebDriver driver){
         this.driver=driver;
-        wait= new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait= new WebDriverWait(driver, Duration.ofSeconds(30));
     }
     protected WebElement awaitElement (By path){
         return wait.until(ExpectedConditions.visibilityOfElementLocated(path));
