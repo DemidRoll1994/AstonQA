@@ -81,8 +81,67 @@ public class MainPageTest {
         driver.switchTo().frame(mainPage.getPaymentFrame());
         payPage = new PayPage(driver);
         assertEquals(payPage.getDescriptionText(), PAYMENT_EXPECTED_TITLE);
+
+//        driver.switchTo().frame(iframe);
+//        WebElement element = new WebDriverWait(driver, Duration.ofSeconds(10))
+//                .until(ExpectedConditions.visibilityOfElementLocated(By.className("pay-description__text")));
+//        String expectedTitle = "Оплата: Услуги связи Номер:375297777777";
+//        assertEquals(element.getText(), expectedTitle);
+
     }
 
+    @DataProvider
+    public Object[][] placeHolderProvider() {
+
+        return new Object[][][]{
+                {new String[]{"Номер телефона", "Сумма", "E-mail для отправки чека"},
+                        new String[]{"connection-phone", "connection-sum", "connection-email"}},
+                {new String[]{"Номер абонента", "Сумма", "E-mail для отправки чека"},
+                        new String[]{"internet-phone", "internet-sum", "internet-email"}},
+                {new String[]{"Номер счета на 44", "Сумма", "E-mail для отправки чека"},
+                        new String[]{"score-instalment", "instalment-sum", "instalment-email"}},
+                {new String[]{"Номер счета на 2073", "Сумма", "E-mail для отправки чека"},
+                        new String[]{"score-arrears", "arrears-sum", "arrears-email"}}};
+    }
+
+    @Test(dataProvider = "placeHolderProvider")
+    public void testPlaceHolders(String[] expected, String[] classNames) {
+        String[] actual = mainPage.getPlaceHoldersByClassnames(classNames);
+        assertEquals(actual, expected);
+    }
+/*
+    @Test
+    public void testPlaceholdersInPaymentFields() {
+        mainPage.selectTab("Услуги связи");
+        mainPage.checkPlaceholdersForFields(
+                new String[]{"Номер телефона", "Сумма", "E-mail для отправки чека"}
+        );
+    }
+
+    @Test
+    public void testPlaceholdersInHomeInternetPaymentFields() {
+        mainPage.selectTab("Домашний интернет");
+        mainPage.checkPlaceholdersForFields(
+                new String[]{"Номер абонента", "Сумма", "E-mail для отправки чека"}
+        );
+    }
+
+    @Test
+    public void testPlaceholdersInInstalmentPaymentFields() {
+        mainPage.selectTab("Рассрочка");
+        mainPage.checkPlaceholdersForFields(
+                new String[]{"Номер счета на 44", "Сумма", "E-mail для отправки чека"}
+        );
+    }
+
+    @Test
+    public void testPlaceholdersInArrearsPaymentFields() {
+        mainPage.selectTab("Задолженность");
+        mainPage.checkPlaceholdersForFields(
+                new String[]{"Номер счета на 2073", "Сумма", "E-mail для отправки чека"}
+        );
+    }
+*/
     @AfterMethod
     public void finalizeTests() {
         driver.quit();
